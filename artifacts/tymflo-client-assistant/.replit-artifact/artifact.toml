@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "TymFlo Client Assistant"
+description = "A warm, mobile-first client portal where TymFlo clients can talk, upload updates, review project context, approve requests, and open their Dubsado portal while the TymFlo team manages structured work briefs."
+version = "1.0.0"
+id = "artifacts/tymflo-client-assistant"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25240
+
+[services.development]
+run = "pnpm --filter @workspace/tymflo-client-assistant run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/tymflo-client-assistant", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/tymflo-client-assistant/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25240"
+BASE_PATH = "/"

@@ -1,0 +1,722 @@
+@import '@workspace/tymflo-design-system/styles.css';
+
+@font-face {
+  font-family: 'Better Sabrina';
+  src: url('/fonts/better-sabrina.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/montserrat-variable.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/montserrat-italic-variable.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Spectral';
+  src: url('/fonts/spectral-regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Spectral';
+  src: url('/fonts/spectral-medium-italic.ttf') format('truetype');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@import 'tw-animate-css';
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-card-border: hsl(var(--card-border));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-popover-border: hsl(var(--popover-border));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary-border: var(--primary-border);
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-secondary-border: var(--secondary-border);
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-muted-border: var(--muted-border);
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-accent-border: var(--accent-border);
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-destructive-border: var(--destructive-border);
+
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
+
+  --color-sidebar: hsl(var(--sidebar));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-primary-border: var(--sidebar-primary-border);
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-accent-border: var(--sidebar-accent-border);
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
+
+  --font-sans: var(--app-font-sans);
+  --font-serif: var(--app-font-serif);
+  --font-mono: var(--app-font-mono);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+/* ── Override font tokens to use our local files ──────────────────── */
+:root {
+  --app-font-sans: 'Montserrat', sans-serif;
+  --app-font-serif: 'Spectral', Georgia, serif;
+  --app-font-mono: 'Montserrat', sans-serif;
+
+  /*
+   * The DS ships --primary-foreground as deep purple (258 41.7% 14.1%).
+   * Action buttons use TymFlo Purple (#463176) with TRUE WHITE text.
+   * We override only in this app's scope — all DS Button[variant=default]
+   * and our own .flow-btn / .flow-cta-btn pick this up automatically.
+   */
+  --primary-foreground: 0 0% 100%;
+  /* TymFlo Purple #463176 and darker interaction states. */
+  --flow-action: 258.26 41.32% 32.75%;
+  --flow-action-hover: 258.26 41.32% 28%;
+  --flow-action-active: 258.26 41.32% 24%;
+}
+
+@layer base {
+  * { @apply border-border; }
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    min-width: 320px;
+  }
+  button, input, textarea, select { -webkit-tap-highlight-color: transparent; }
+  /* Keyboard-only focus ring — anchors keep browser default */
+  button:focus-visible, a:focus-visible, input:focus-visible,
+  textarea:focus-visible, select:focus-visible {
+    outline: 3px solid hsl(var(--sidebar-accent) / .6);
+    outline-offset: 3px;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   KEYFRAMES
+   ───────────────────────────────────────────────────────────────────── */
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes breathe {
+  0%, 100% { transform: scale(.96); opacity: .65; }
+  50%       { transform: scale(1);   opacity: 1; }
+}
+
+.page-enter      { animation: pageIn .42s cubic-bezier(.22,.6,.36,1) both; }
+.fade-up         { animation: fadeUp .5s cubic-bezier(.22,.6,.36,1) both; }
+.fade-up-delay   { animation: fadeUp .5s cubic-bezier(.22,.6,.36,1) .12s both; }
+.fade-up-delay-2 { animation: fadeUp .5s cubic-bezier(.22,.6,.36,1) .22s both; }
+.fade-up-delay-3 { animation: fadeUp .5s cubic-bezier(.22,.6,.36,1) .32s both; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   SHARED PRIMITIVES
+   ───────────────────────────────────────────────────────────────────── */
+.eyebrow {
+  font-family: var(--app-font-sans);
+  font-size: 10px;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.tymflo-logo { display: block; width: 112px; height: auto; }
+
+.skip-link {
+  position: fixed; left: 16px; top: 12px; z-index: 100;
+  transform: translateY(-180%);
+  border-radius: 8px;
+  background: hsl(var(--sidebar));
+  padding: 10px 14px;
+  color: hsl(var(--sidebar-foreground));
+  font-weight: 700;
+  box-shadow: 0 4px 16px hsl(var(--foreground) / .2);
+  transition: transform .2s ease;
+  text-decoration: none;
+}
+.skip-link:focus { transform: translateY(0); }
+
+/* ─────────────────────────────────────────────────────────────────────
+   BACKGROUND
+   Warm almond/off-white field — matches sign-in reference.
+   Two large soft circles in pale lavender + blush, cropped at edges.
+   NO diagonal stripe (removed per brand direction).
+   ───────────────────────────────────────────────────────────────────── */
+
+/* The page background itself comes from the DS --background token
+   (20 100% 99.4% = warm white). We only need the decorative orbs. */
+
+/* Large pale-lavender circle, top-left, mostly cropped */
+.flow-orb-1 {
+  position: fixed;
+  top: -180px; left: -180px;
+  width: 560px; height: 560px;
+  border-radius: 50%;
+  /* sidebar-accent at ~8% opacity gives soft lavender/purple wash */
+  background: hsl(var(--sidebar-accent) / .09);
+  pointer-events: none; z-index: 0;
+}
+
+/* Large blush/peach circle, bottom-right, mostly cropped */
+.flow-orb-2 {
+  position: fixed;
+  bottom: -200px; right: -180px;
+  width: 520px; height: 520px;
+  border-radius: 50%;
+  /* primary (tangerine) at very low opacity = blush */
+  background: hsl(var(--primary) / .07);
+  pointer-events: none; z-index: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   HEADER / NAV
+   ───────────────────────────────────────────────────────────────────── */
+.flow-header {
+  position: sticky; top: 0; z-index: 30;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 68px;
+  padding: 0 clamp(20px, 5vw, 60px);
+  background: hsl(var(--background) / .92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid hsl(var(--border) / .6);
+}
+
+/* Nav links — 44 px min-height, no underline, subtle hover */
+.flow-nav-link {
+  display: inline-flex; align-items: center;
+  min-height: 44px; padding: 0 12px;
+  font-family: var(--app-font-sans); font-size: 10px;
+  letter-spacing: .1em; text-transform: uppercase; font-weight: 600;
+  color: hsl(var(--muted-foreground)); text-decoration: none;
+  border-radius: 8px;
+  transition: color .15s, background .15s;
+}
+.flow-nav-link:hover {
+  color: hsl(var(--foreground));
+  background: hsl(var(--sidebar-accent) / .05);
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   FOOTER
+   ───────────────────────────────────────────────────────────────────── */
+.flow-footer {
+  position: relative; z-index: 1;
+  border-top: 1px solid hsl(var(--border) / .5);
+  background: transparent;
+  padding: 22px 20px; text-align: center;
+  font-size: 12px; color: hsl(var(--muted-foreground));
+}
+/* Inline footer links — prose style, no min-height */
+.flow-footer a {
+  color: hsl(var(--primary));
+  text-decoration: underline; text-underline-offset: 2px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   ASSESSMENT CARD — white surface on almond field
+   ───────────────────────────────────────────────────────────────────── */
+.flow-card {
+  position: relative; z-index: 1;
+  background: hsl(var(--card));           /* pure white per DS token */
+  border: 1px solid hsl(var(--border));
+  border-radius: 20px;
+  box-shadow:
+    0 2px 12px hsl(var(--foreground) / .06),
+    0 8px 40px hsl(var(--foreground) / .04);
+  padding: clamp(28px, 6vw, 54px);
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   INTRO STEP
+   ───────────────────────────────────────────────────────────────────── */
+.flow-intro-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid hsl(var(--primary) / .25);
+  border-radius: 99px; padding: 6px 14px;
+  background: hsl(var(--primary) / .06);
+  margin-bottom: 22px;
+}
+.flow-intro-badge-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: hsl(var(--primary));
+  box-shadow: 0 0 0 3px hsl(var(--primary) / .2);
+  animation: breathe 2.2s ease-in-out infinite;
+}
+
+/* Hero display: lighter Montserrat with one restrained editorial accent. */
+.flow-display {
+  font-family: var(--app-font-sans);
+  font-size: clamp(2.6rem, 6.5vw, 4rem);
+  font-weight: 500; line-height: 1.08; letter-spacing: -.045em;
+  color: hsl(var(--foreground));         /* deep purple */
+  margin-bottom: 0;
+}
+.flow-display em {
+  font-family: var(--app-font-serif);
+  font-style: italic; font-weight: 500;
+  color: hsl(var(--primary));            /* tangerine */
+  letter-spacing: -.02em;
+}
+
+/* Topic chips — understated, purple tint */
+.flow-topic-chip {
+  display: inline-flex; align-items: center; height: 30px;
+  border-radius: 8px; border: 1px solid hsl(var(--sidebar-accent) / .15);
+  background: hsl(var(--sidebar-accent) / .05); padding: 0 10px;
+  font-family: var(--app-font-sans); font-size: 9px;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: hsl(var(--sidebar-accent));
+}
+
+/* Trust strip */
+.flow-trust-item {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; color: hsl(var(--muted-foreground));
+}
+.flow-trust-divider {
+  color: hsl(var(--border)); user-select: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   QUESTION STEP
+   ───────────────────────────────────────────────────────────────────── */
+
+/* Eyebrow topic label above question */
+.flow-topic-label {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--app-font-sans); font-size: 9px;
+  letter-spacing: .12em; text-transform: uppercase; font-weight: 600;
+  color: hsl(var(--primary)); margin-bottom: 10px;
+}
+.flow-topic-label::before {
+  content: '';
+  display: inline-block; width: 14px; height: 2px;
+  background: hsl(var(--primary)); border-radius: 2px;
+}
+
+.flow-question {
+  font-family: var(--app-font-sans);
+  font-size: clamp(1.15rem, 3vw, 1.5rem); font-weight: 600;
+  line-height: 1.3; letter-spacing: -.03em;
+  color: hsl(var(--foreground)); margin-bottom: 22px;
+}
+
+/*
+ * Answer card — Label wrapping a DS RadioGroupItem + text.
+ * Selected state: thin tangerine border + very light tangerine wash.
+ * NOT flooded — just enough accent to confirm selection.
+ */
+.flow-option-label {
+  display: flex; align-items: flex-start; gap: 14px; width: 100%;
+  min-height: 64px; padding: 16px 18px;
+  border: 1.5px solid hsl(var(--border));
+  border-radius: 14px;
+  background: hsl(var(--card));
+  cursor: pointer;
+  transition: border-color .18s, background .18s, box-shadow .18s;
+  color: hsl(var(--foreground));
+}
+.flow-option-label:hover {
+  border-color: hsl(var(--primary) / .4);
+  background: hsl(var(--primary) / .03);
+  box-shadow: 0 2px 12px hsl(var(--primary) / .07);
+}
+/* Selected — restrained tangerine, not flooded */
+.flow-option-label[data-selected='true'] {
+  border-color: hsl(var(--primary));
+  background: hsl(var(--primary) / .05);
+  box-shadow: 0 0 0 3px hsl(var(--primary) / .12);
+}
+/* Answer text — Spectral for editorial warmth */
+.flow-option-text {
+  font-family: var(--app-font-serif);
+  font-size: 15px; line-height: 1.55; color: hsl(var(--foreground));
+}
+
+/* DS RadioGroupItem overrides — sized for answer cards */
+.flow-radio-item {
+  flex: none !important;
+  margin-top: 2px;
+  width: 20px !important; height: 20px !important;
+  border-color: hsl(var(--border)) !important;
+  transition: border-color .15s;
+}
+.flow-radio-item[data-state='checked'] {
+  border-color: hsl(var(--primary)) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   PROGRESS BAR (DS Progress wrapper)
+   ───────────────────────────────────────────────────────────────────── */
+.flow-progress-wrap {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 26px;
+}
+.flow-progress-label {
+  font-family: var(--app-font-sans); font-size: 9px;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: hsl(var(--muted-foreground)); white-space: nowrap;
+}
+/* Tint DS Progress indicator to tangerine */
+.flow-progress [data-slot='indicator'],
+.flow-progress .bg-primary {
+  background: hsl(var(--primary));
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   PRIMARY ACTION BUTTONS — TymFlo Purple + white text
+   All primary CTAs: Start, Next, Submit, Book a Call
+   ───────────────────────────────────────────────────────────────────── */
+.flow-btn {
+  min-height: 52px !important;
+  border-radius: 12px !important;
+  font-family: var(--app-font-sans) !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  letter-spacing: -.01em !important;
+  padding-left: 28px !important;
+  padding-right: 28px !important;
+  /* White text over TymFlo Purple — override any inherited color */
+  color: #ffffff !important;
+  background: hsl(var(--flow-action)) !important;
+  border-color: hsl(var(--flow-action)) !important;
+  box-shadow: 0 2px 12px hsl(var(--flow-action) / .28) !important;
+  transition: background .18s, transform .18s, box-shadow .18s !important;
+}
+.flow-btn:hover:not(:disabled) {
+  background: hsl(var(--flow-action-hover)) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 5px 20px hsl(var(--flow-action) / .35) !important;
+}
+.flow-btn:active:not(:disabled) {
+  transform: translateY(0) !important;
+  background: hsl(var(--flow-action-active)) !important;
+}
+.flow-btn:disabled {
+  opacity: .45 !important;
+  cursor: not-allowed !important;
+}
+.flow-btn:focus-visible {
+  outline: 3px solid hsl(var(--sidebar-accent) / .6) !important;
+  outline-offset: 3px !important;
+}
+
+/* Start button — full-width on mobile, taller */
+.flow-btn-start {
+  min-height: 56px !important;
+  border-radius: 14px !important;
+  font-size: 16px !important;
+  padding-left: 36px !important;
+  padding-right: 36px !important;
+}
+
+/* Back / outline buttons — neutral, no tangerine */
+.flow-btn-back {
+  min-height: 52px !important;
+  border-radius: 12px !important;
+  font-size: 14px !important;
+  /* Ensure no tangerine leaks from any DS default */
+  color: hsl(var(--muted-foreground)) !important;
+}
+.flow-btn-back:hover {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   CONTACT STEP — form fields
+   ───────────────────────────────────────────────────────────────────── */
+.flow-field-label {
+  display: block;
+  font-family: var(--app-font-sans); font-size: 9px;
+  letter-spacing: .12em; text-transform: uppercase; font-weight: 600;
+  color: hsl(var(--sidebar-accent)); margin-bottom: 7px;
+}
+.flow-field-label .req { color: hsl(var(--primary)); margin-left: 2px; }
+
+/* DS Input override — 48px+ touch target */
+.flow-input-field {
+  min-height: 48px !important;
+  border-color: hsl(var(--border)) !important;
+  background: hsl(var(--card)) !important;
+  font-family: var(--app-font-sans) !important;
+  font-size: 14px !important;
+  border-radius: 10px !important;
+}
+.flow-input-field:focus-visible {
+  border-color: hsl(var(--primary)) !important;
+  box-shadow: 0 0 0 3px hsl(var(--primary) / .14) !important;
+}
+
+.flow-submission-consent {
+  font-family: var(--app-font-sans);
+  font-size: 12px;
+  line-height: 1.6;
+  color: hsl(var(--muted-foreground));
+  text-align: center;
+}
+.flow-submission-consent a {
+  color: hsl(var(--sidebar-accent));
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   RESULT STEP
+   ───────────────────────────────────────────────────────────────────── */
+
+/* Score numeral — Better Sabrina, tangerine for flowing, others by level */
+.flow-score-numeral {
+  font-family: 'Better Sabrina', var(--app-font-serif), serif;
+  font-size: clamp(5rem, 14vw, 8rem);
+  line-height: .85; letter-spacing: -.02em;
+}
+/* Level-driven colours — all use semantic tokens */
+.flow-score-relief  { color: hsl(var(--destructive)); }
+.flow-score-gaining { color: hsl(var(--accent)); }
+.flow-score-flowing { color: hsl(var(--primary)); }   /* tangerine */
+
+/* Score bar fill track */
+.flow-result-track {
+  height: 6px; border-radius: 99px;
+  background: hsl(var(--border)); overflow: hidden;
+}
+.flow-result-fill {
+  height: 100%; border-radius: 99px;
+  transition: width .8s cubic-bezier(.22,.6,.36,1) .2s;
+}
+.flow-result-fill-relief  { background: hsl(var(--destructive)); }
+.flow-result-fill-gaining { background: hsl(var(--accent)); }
+.flow-result-fill-flowing { background: hsl(var(--primary)); }
+
+/* Opportunity panel — white card, left tangerine accent */
+.flow-opportunity-panel {
+  border-left: 3px solid hsl(var(--primary)) !important;
+  border-radius: 0 14px 14px 0 !important;
+  background: hsl(var(--card)) !important;
+  box-shadow: 0 2px 12px hsl(var(--foreground) / .05) !important;
+}
+
+/* Giveaway entered banner */
+.flow-giveaway-banner {
+  display: flex; gap: 12px; align-items: flex-start;
+  border: 1px solid hsl(var(--primary) / .25);
+  border-radius: 12px; background: hsl(var(--primary) / .05); padding: 16px 18px;
+}
+.flow-giveaway-icon {
+  flex: none; width: 32px; height: 32px; border-radius: 9px;
+  background: hsl(var(--primary)); color: #ffffff;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   CTA BLOCK — deep purple brand surface, tangerine accent + white text
+   ───────────────────────────────────────────────────────────────────── */
+.flow-cta-block {
+  border-radius: 20px;
+  background: hsl(var(--sidebar));         /* deep purple */
+  padding: clamp(32px, 6vw, 52px);
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+/* Subtle oversized pale circle decoration — keeps things lively */
+.flow-cta-block::before {
+  content: '';
+  position: absolute; top: -120px; right: -100px;
+  width: 340px; height: 340px; border-radius: 50%;
+  background: hsl(var(--primary) / .12);
+  pointer-events: none;
+}
+.flow-cta-block::after {
+  content: '';
+  position: absolute; bottom: -80px; left: -80px;
+  width: 240px; height: 240px; border-radius: 50%;
+  background: hsl(var(--sidebar-accent) / .3);
+  pointer-events: none;
+}
+.flow-cta-eyebrow {
+  position: relative; z-index: 1;
+  font-family: var(--app-font-sans); font-size: 9px;
+  letter-spacing: .15em; text-transform: uppercase;
+  color: hsl(var(--primary) / .8); margin-bottom: 10px;
+}
+/* CTA heading: Montserrat bold, white; em = Spectral italic, tangerine */
+.flow-cta-heading {
+  position: relative; z-index: 1;
+  font-family: var(--app-font-sans);
+  font-size: clamp(1.5rem, 3.8vw, 2.1rem);
+  font-weight: 700; line-height: 1.1; letter-spacing: -.04em;
+  color: hsl(var(--sidebar-foreground));   /* white */
+  margin-bottom: 10px;
+}
+.flow-cta-heading em {
+  font-family: var(--app-font-serif);
+  font-style: italic; font-weight: 500;
+  color: hsl(var(--primary));              /* tangerine */
+}
+.flow-cta-sub {
+  position: relative; z-index: 1;
+  font-family: var(--app-font-serif);
+  font-size: 15px; line-height: 1.65;
+  color: hsl(var(--sidebar-foreground) / .65);
+  margin-bottom: 24px;
+}
+
+/*
+ * CTA anchor — tangerine background, TRUE WHITE text.
+ * min-height 54px, treated as block-level link (not a DS Button
+ * because it is an <a href> to an external URL, not a page action).
+ */
+.flow-cta-btn {
+  position: relative; z-index: 1;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 54px; padding: 0 36px; border-radius: 13px;
+  background: hsl(var(--flow-action));
+  color: #ffffff;                          /* always white — never purple */
+  font-family: var(--app-font-sans); font-size: 15px; font-weight: 700;
+  letter-spacing: -.01em; text-decoration: none;
+  transition: background .18s, transform .18s, box-shadow .18s;
+  box-shadow: 0 4px 20px hsl(var(--flow-action) / .35);
+}
+.flow-cta-btn:hover {
+  background: hsl(var(--flow-action-hover));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px hsl(var(--flow-action) / .4);
+  color: #ffffff;
+}
+.flow-cta-btn:active { transform: translateY(0); background: hsl(var(--flow-action-active)); }
+.flow-cta-btn:focus-visible {
+  outline: 3px solid hsl(var(--sidebar-foreground) / .6);
+  outline-offset: 3px;
+  color: #ffffff;
+}
+.flow-cta-note {
+  position: relative; z-index: 1; margin-top: 14px;
+  font-size: 10px; color: hsl(var(--sidebar-foreground) / .4);
+  font-family: var(--app-font-sans); letter-spacing: .07em; text-transform: uppercase;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   LEGAL PAGES
+   ───────────────────────────────────────────────────────────────────── */
+.legal-container { width: 100%; max-width: 720px; }
+.legal-back-link {
+  display: inline-flex; align-items: center; gap: 7px;
+  min-height: 44px; padding: 0 4px;
+  font-size: 13px; font-weight: 600; text-decoration: none;
+  font-family: var(--app-font-sans); letter-spacing: .04em;
+  color: hsl(var(--muted-foreground));
+  margin-bottom: 28px; transition: color .15s;
+}
+.legal-back-link:hover { color: hsl(var(--foreground)); }
+.legal-disclaimer-banner {
+  display: flex; gap: 12px;
+  border: 1px solid hsl(var(--destructive) / .3);
+  border-radius: 12px; background: hsl(var(--destructive) / .06);
+  padding: 16px 18px; color: hsl(var(--destructive));
+  font-size: 13px; line-height: 1.55; margin-bottom: 32px;
+}
+.legal-header { margin-bottom: 32px; }
+.legal-accent-bar {
+  width: 40px; height: 3px;
+  background: hsl(var(--primary));
+  border-radius: 2px; margin-bottom: 14px;
+}
+.legal-title {
+  margin-top: 8px; font-family: var(--app-font-sans);
+  font-size: clamp(2rem, 5vw, 3rem); font-weight: 700;
+  letter-spacing: -.06em; line-height: 1; color: hsl(var(--foreground));
+}
+.legal-date {
+  margin-top: 10px; font-family: var(--app-font-sans); font-size: 11px;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+}
+.legal-body { border-top: 1px solid hsl(var(--border)); padding-top: 32px; }
+.legal-body.prose h2 {
+  font-family: var(--app-font-sans);
+  font-size: 1.05rem; font-weight: 700; letter-spacing: -.025em;
+  color: hsl(var(--foreground)); margin-top: 32px; margin-bottom: 10px;
+}
+.legal-body.prose p {
+  font-family: var(--app-font-serif);
+  font-size: 15px; line-height: 1.8;
+  color: hsl(var(--muted-foreground)); margin-bottom: 14px;
+}
+.legal-body.prose ul { padding-left: 20px; margin-bottom: 14px; list-style: disc; }
+.legal-body.prose li {
+  font-family: var(--app-font-serif);
+  font-size: 15px; line-height: 1.8;
+  color: hsl(var(--muted-foreground)); margin-bottom: 6px;
+}
+/* Prose links — inline only, no min-height */
+.legal-body.prose a {
+  color: hsl(var(--primary));
+  text-decoration: underline; text-underline-offset: 2px;
+}
+.legal-body.prose a:hover { opacity: .8; }
+
+/* ─────────────────────────────────────────────────────────────────────
+   RESPONSIVE
+   ───────────────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .flow-card { padding: 24px 20px; border-radius: 16px; }
+  .flow-cta-block { padding: 28px 20px; border-radius: 16px; }
+  .flow-btn-start { width: 100%; }
+  .flow-cta-btn { width: 100%; }
+}

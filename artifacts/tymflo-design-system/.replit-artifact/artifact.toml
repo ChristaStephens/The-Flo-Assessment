@@ -1,0 +1,19 @@
+kind = "design-system"
+previewPath = "/tymflo-design-system/"
+title = "TymFlo Design System"
+description = "A reusable sea-glass editorial design system extracted from the TymFlo Client Assistant, covering its warm parchment surfaces, deep teal workspace chrome, marigold actions, expressive serif display type, and calm client-facing utility patterns."
+version = "1.0.0"
+id = "artifacts/tymflo-design-system"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/tymflo-design-system/" ]
+localPort = 23088
+
+[services.development]
+run = "pnpm --filter @workspace/tymflo-design-system run dev"
+
+[services.env]
+PORT = "23088"
+BASE_PATH = "/tymflo-design-system/"

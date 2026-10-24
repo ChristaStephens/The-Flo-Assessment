@@ -1,0 +1,482 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: portal
+    description: Client portal and assistant operations
+  - name: auth
+    description: Passwordless client authentication
+  - name: requests
+    description: TymFlo requests and approvals
+  - name: admin
+    description: Internal team dashboard operations
+  - name: lead-magnet
+    description: Public Flow Score assessment operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /auth/magic-link:
+    post:
+      operationId: requestMagicLink
+      tags: [auth]
+      summary: Send a passwordless client sign-in link
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MagicLinkEmailInput"
+      responses:
+        "202":
+          description: Sign-in link accepted for delivery
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MagicLinkSent"
+        "400":
+          description: Invalid email address
+  /auth/sign-out:
+    post:
+      operationId: signOut
+      tags: [auth]
+      summary: End the current client session
+      responses:
+        "204":
+          description: Signed out
+  /portal:
+    get:
+      operationId: getPortal
+      tags: [portal]
+      summary: Get the current client portal
+      responses:
+        "200":
+          description: Client portal data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Portal"
+  /portal/conversations:
+    get:
+      operationId: listConversations
+      tags: [portal]
+      summary: List recent client conversations
+      responses:
+        "200":
+          description: Recent conversations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Conversation"
+    post:
+      operationId: createConversation
+      tags: [portal]
+      summary: Start a client conversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConversationInput"
+      responses:
+        "201":
+          description: Conversation created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Conversation"
+  /portal/conversations/{conversationId}/messages:
+    post:
+      operationId: sendConversationMessage
+      tags: [portal]
+      summary: Send a message to the TymFlo assistant
+      parameters:
+        - name: conversationId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessageInput"
+      responses:
+        "200":
+          description: Assistant response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssistantResponse"
+  /portal/attachments/request-url:
+    post:
+      operationId: requestAttachmentUpload
+      tags: [portal]
+      summary: Request a presigned URL for a client attachment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AttachmentUploadInput"
+      responses:
+        "200":
+          description: Presigned upload URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AttachmentUploadResponse"
+  /portal/requests:
+    get:
+      operationId: listClientRequests
+      tags: [requests]
+      summary: List requests for the current client
+      responses:
+        "200":
+          description: Client requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ClientRequest"
+    post:
+      operationId: createClientRequest
+      tags: [requests]
+      summary: Create a draft request from a confirmed client brief
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestInput"
+      responses:
+        "201":
+          description: Created request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientRequest"
+  /portal/requests/{requestId}/confirm:
+    post:
+      operationId: confirmClientRequest
+      tags: [requests]
+      summary: Confirm and submit a request to TymFlo
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Confirmed request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientRequest"
+  /admin/overview:
+    get:
+      operationId: getAdminOverview
+      tags: [admin]
+      summary: Get the internal team overview
+      responses:
+        "200":
+          description: Internal dashboard overview
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminOverview"
+  /lead-magnet/submissions:
+    post:
+      operationId: submitFlowScore
+      tags: [lead-magnet]
+      summary: Submit the public Flow Score assessment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FlowScoreSubmissionInput"
+      responses:
+        "201":
+          description: Assessment saved and scored
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FlowScoreResult"
+        "400":
+          description: Invalid assessment or consent details
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    MagicLinkEmailInput:
+      type: object
+      required: [email]
+      properties:
+        email: { type: string, minLength: 3 }
+    MagicLinkSent:
+      type: object
+      required: [message]
+      properties:
+        message: { type: string }
+        developmentLink:
+          type: string
+          description: Available only in local development when an email transport is not configured.
+    Portal:
+      type: object
+      required: [client, usage, projects, links, safetyNotice]
+      properties:
+        client:
+          $ref: "#/components/schemas/Client"
+        usage:
+          $ref: "#/components/schemas/Usage"
+        projects:
+          type: array
+          items:
+            $ref: "#/components/schemas/Project"
+        links:
+          $ref: "#/components/schemas/PortalLinks"
+        safetyNotice:
+          type: string
+    Client:
+      type: object
+      required: [id, firstName, name, businessName, email]
+      properties:
+        id: { type: string }
+        firstName: { type: string }
+        name: { type: string }
+        businessName: { type: string }
+        email: { type: string }
+    Usage:
+      type: object
+      required: [used, limit, unit, resetLabel]
+      properties:
+        used: { type: number }
+        limit: { type: number }
+        unit: { type: string }
+        resetLabel: { type: string }
+    Project:
+      type: object
+      required: [id, name, service, status, nextMilestone]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        service: { type: string }
+        status: { type: string }
+        nextMilestone: { type: string }
+        dueDate: { type: ["string", "null"] }
+    PortalLinks:
+      type: object
+      required: [dubsado, supportEmail, supportPhone]
+      properties:
+        dubsado: { type: string }
+        supportEmail: { type: string }
+        supportPhone: { type: string }
+    Conversation:
+      type: object
+      required: [id, title, status, updatedAt, messages]
+      properties:
+        id: { type: string }
+        title: { type: string }
+        status: { type: string }
+        updatedAt: { type: string }
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/Message"
+    ConversationInput:
+      type: object
+      required: [title]
+      properties:
+        title: { type: string, minLength: 1 }
+    Message:
+      type: object
+      required: [id, role, content, createdAt, attachments]
+      properties:
+        id: { type: string }
+        role: { type: string, enum: [client, assistant, system] }
+        content: { type: string }
+        createdAt: { type: string }
+        attachments:
+          type: array
+          items:
+            $ref: "#/components/schemas/MessageAttachment"
+    MessageInput:
+      type: object
+      required: [content]
+      properties:
+        content: { type: string, minLength: 1, maxLength: 2000 }
+        attachments:
+          type: array
+          maxItems: 5
+          items:
+            $ref: "#/components/schemas/AttachmentInput"
+    AttachmentInput:
+      type: object
+      required: [uploadId, name, size, contentType]
+      properties:
+        uploadId: { type: string, minLength: 1 }
+        name: { type: string, minLength: 1, maxLength: 255 }
+        size: { type: number, minimum: 1, maximum: 10485760 }
+        contentType: { type: string, minLength: 1, maxLength: 255 }
+    AttachmentUploadInput:
+      type: object
+      required: [name, size, contentType]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 255 }
+        size: { type: number, minimum: 1, maximum: 10485760 }
+        contentType: { type: string, minLength: 1, maxLength: 255 }
+    AttachmentUploadResponse:
+      type: object
+      required: [uploadURL, uploadId, name, size, contentType]
+      properties:
+        uploadURL: { type: string, minLength: 1 }
+        uploadId: { type: string }
+        name: { type: string }
+        size: { type: number }
+        contentType: { type: string }
+    MessageAttachment:
+      type: object
+      required: [id, name, size, contentType, url]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        size: { type: number }
+        contentType: { type: string }
+        url: { type: string }
+    AssistantResponse:
+      type: object
+      required: [message, usage, requestDraft, clientMessage]
+      properties:
+        message: { type: string }
+        clientMessage:
+          $ref: "#/components/schemas/Message"
+        usage:
+          $ref: "#/components/schemas/Usage"
+        requestDraft:
+          type: ["object", "null"]
+          additionalProperties: true
+    ClientRequest:
+      type: object
+      required: [id, title, summary, status, functions, submittedAt]
+      properties:
+        id: { type: string }
+        title: { type: string }
+        summary: { type: string }
+        status: { type: string }
+        functions:
+          type: array
+          items: { type: string }
+        submittedAt: { type: string }
+        deadline: { type: ["string", "null"] }
+    RequestInput:
+      type: object
+      required: [title, summary, functions]
+      properties:
+        title: { type: string, minLength: 1 }
+        summary: { type: string, minLength: 1 }
+        functions:
+          type: array
+          items: { type: string }
+        deadline: { type: ["string", "null"] }
+    AdminOverview:
+      type: object
+      required: [counts, requests, activity]
+      properties:
+        counts:
+          type: object
+          required: [needsClarification, ready, approvals, completed]
+          properties:
+            needsClarification: { type: number }
+            ready: { type: number }
+            approvals: { type: number }
+            completed: { type: number }
+        requests:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminRequest"
+        activity:
+          type: array
+          items:
+            $ref: "#/components/schemas/Activity"
+    AdminRequest:
+      type: object
+      required: [id, clientName, title, summary, status, priority, function, updatedAt]
+      properties:
+        id: { type: string }
+        clientName: { type: string }
+        title: { type: string }
+        summary: { type: string }
+        status: { type: string }
+        priority: { type: string }
+        function: { type: string }
+        updatedAt: { type: string }
+    Activity:
+      type: object
+      required: [id, text, time, tone]
+      properties:
+        id: { type: string }
+        text: { type: string }
+        time: { type: string }
+        tone: { type: string }
+    FlowScoreSubmissionInput:
+      type: object
+      required: [name, email, answers, acceptedTerms, acceptedPrivacy, marketingConsent, giveawayOptIn]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 120 }
+        email: { type: string, minLength: 5, maxLength: 254 }
+        phone: { type: ["string", "null"], maxLength: 40 }
+        businessName: { type: ["string", "null"], minLength: 2, maxLength: 160 }
+        industry: { type: ["string", "null"], maxLength: 120 }
+        answers:
+          type: array
+          minItems: 5
+          maxItems: 5
+          items:
+            type: number
+            minimum: 0
+            maximum: 2
+        acceptedTerms: { type: boolean }
+        acceptedPrivacy: { type: boolean }
+        marketingConsent: { type: boolean }
+        giveawayOptIn: { type: boolean }
+    FlowScoreResult:
+      type: object
+      required: [submissionId, score, level, headline, message, opportunity, opportunityMessage]
+      properties:
+        submissionId: { type: string }
+        score: { type: number, minimum: 0, maximum: 10 }
+        level: { type: string, enum: [needs-relief, gaining-flow, flowing-strong] }
+        headline: { type: string }
+        message: { type: string }
+        opportunity: { type: string }
+        opportunityMessage: { type: string }
+
