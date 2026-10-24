@@ -30,7 +30,7 @@ app.use(cookieParser());
 // GitHub Pages hosts the public frontend; Airtable writes stay server-side.
 // No cookies or credentials are needed for this public submission endpoint.
 app.use("/api/lead-magnet/submissions", cors({
-  origin: "https://christastephens.github.io",
+  origin: ["https://christastephens.github.io", "https://events.tymflo.com"],
   methods: ["POST", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Accept"],
 }));

@@ -88,6 +88,7 @@ router.post("/lead-magnet/submissions", async (req, res): Promise<void> => {
       name,
       email,
       score,
+      scoreDescription: `${copy.headline}\n\n${copy.message}`,
       answers: input.answers,
     });
   } catch (error) {

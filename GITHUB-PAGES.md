@@ -19,10 +19,27 @@ update `VITE_API_BASE_URL` in the workflow and rebuild.
 GitHub Pages → HTTPS POST to the Replit submission endpoint → Airtable →
 existing PostgreSQL backup → results returned to the assessment.
 
-The API allows the `https://christastephens.github.io` origin on the submission
-endpoint. A custom frontend domain requires updating that allowlist and
-republishing the backend. Airtable credentials stay in Replit's managed connector,
+The API allows `https://events.tymflo.com` and the original
+`https://christastephens.github.io` origin on the submission endpoint.
+Changing this allowlist requires republishing the backend.
+Airtable credentials stay in Replit's managed connector,
 never in the static build or GitHub Actions.
+
+## Custom event address
+
+The public assessment address is `https://events.tymflo.com/`.
+Wix manages the domain's DNS, while GitHub Pages hosts this subdomain's content.
+The main Wix website and its other DNS records must stay unchanged.
+
+- GitHub repository **Settings → Pages → Custom domain**: `events.tymflo.com`
+- Wix CNAME host: `events` (shown as `events.tymflo.com`)
+- Wix CNAME target: `christastephens.github.io` (no protocol, path or repository name)
+- Enable **Enforce HTTPS** in GitHub Pages once its certificate is ready.
+
+The workflow reads the Pages base path automatically. Run it again after
+changing the custom domain so fonts, assets and legal links use the domain root.
+GitHub documents that DNS propagation and HTTPS availability can take up to 24 hours.
+Do not share the HTTP address for collecting names and email addresses.
 
 If the backend is offline or saving fails, the assessment displays an error
 instead of showing a successful result. A frontend-only deployment cannot write

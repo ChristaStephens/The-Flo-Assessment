@@ -60,6 +60,7 @@ export async function createFlowScoreAirtableRecord(input: {
   name: string;
   email: string;
   score: number;
+  scoreDescription: string;
   answers: number[];
 }): Promise<void> {
   const connectors = new ReplitConnectors();
@@ -76,6 +77,7 @@ export async function createFlowScoreAirtableRecord(input: {
               Name: input.name,
               Email: input.email,
               "Flow Score": `${input.score}/10`,
+              "Score Description": input.scoreDescription,
               "Their Input in Questionnaire": formatAnswers(input.answers),
             },
           },
